@@ -1,0 +1,12 @@
+### Text template
+*.doc
+*.docx
+*.log
+*.msg
+*.pages
+*.rtf
+*.wpd
+*.wps
+
+/.venv
+/.idea
