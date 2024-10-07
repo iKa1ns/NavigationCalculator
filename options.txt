@@ -1,0 +1,14 @@
+dbid:2410
+easet:Y
+ic1:
+ic2:
+id1:uuee
+id2:urml
+k:1233505483
+lvl:B
+maxalt:FL330
+minalt:FL330
+nats:R
+rnav:Y
+usesid:Y
+usestar:Y
