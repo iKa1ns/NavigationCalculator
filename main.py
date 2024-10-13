@@ -1,7 +1,7 @@
 import requests
 
 
-def get_response(departure, arrival) -> requests.Response:
+def get_response(departure: str, arrival: str) -> requests.Response:
     """
     Функция для запроса
     :param departure: ICAO отправления
