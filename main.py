@@ -32,9 +32,6 @@ def get_response(departure, arrival) -> requests.Response:
         if r.status_code == 200:
             return r
 
-
-
-
     except Exception as e:
         print(e)
 
