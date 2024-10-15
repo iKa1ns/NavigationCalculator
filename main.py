@@ -1,4 +1,6 @@
 import requests
+import re
+from bs4 import BeautifulSoup as Bs
 
 
 def get_response(departure, arrival) -> requests.Response:
@@ -28,25 +30,48 @@ def get_response(departure, arrival) -> requests.Response:
                                      'usesid': 'Y',
                                      'usestar': 'Y'})
         if r.status_code == 200:
-            print(r.text)
             return r
+
+
+
+
     except Exception as e:
         print(e)
 
 
-print(get_response('uuee', 'urml'))
+get_response('uuee', 'urml')
 
 
-def get_points(response: requests.Response) -> list[str]:
+def get_points(r) -> list[str]:
     """
     Функция для парсинга html страницы и формирования массива точек
     :param response: полученный отклик
     :return: массив точек (fix)
+
     """
-    pass
+    arr0 = []
+    soup = Bs(r.text, 'html.parser')
+    table = soup.findAll('pre')
+    for i in range(len(table)):
+        arr0.append(table[i].text)
+    arr = []
+    result = re.finditer(r'[A-Z]+(\s{2,})\d', r.text)
+    for i in result:
+        arr.append(i.group())
+    arr2 = []
+    for i in arr:
+        arr2.append(re.findall('[A-Z]{1,}', i))
+    arr3 = []
+    for i in arr2:
+        arr3.append(''.join(i))
+    print(arr3)
 
 
-def main():
-    departure = input()
-    arrival = input()
-    print(get_points(get_response(departure, arrival)))
+r = get_response('uuee', 'urml')
+arr = get_points(r)
+print(arr)
+
+# def main():
+#     departure = input()
+#     arrival = input()
+#     print(get_points(get_response(departure, arrival)))
