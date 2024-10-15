@@ -49,6 +49,7 @@ def get_points(html_text: str) -> list[str]:
     soup = Bs(html_text, 'html.parser')
     table = soup.find('pre').text
     headers_split = table.split('\n')[1:-1]
+    # TODO Вместо добавления в массив названий точек, создавать объект класс Fix и добавлять эти объекты в массив
     arr = [s.split()[0] for s in headers_split]
     return arr
 
