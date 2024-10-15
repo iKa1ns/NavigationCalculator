@@ -1,9 +1,12 @@
 import requests
-import re
 from bs4 import BeautifulSoup as Bs
 
 
-def get_response(departure: str, arrival: str) -> requests.Response:
+def get_text_from_file():
+    return open('test.html', 'r').read()
+
+
+def get_response(departure: str, arrival: str) -> str:
     """
     Функция для запроса
     :param departure: ICAO отправления
@@ -30,45 +33,27 @@ def get_response(departure: str, arrival: str) -> requests.Response:
                                      'usesid': 'Y',
                                      'usestar': 'Y'})
         if r.status_code == 200:
-            return r
-
+            return r.text
+        else:
+            print(r.status_code)
     except Exception as e:
         print(e)
 
 
-get_response('uuee', 'urml')
-
-
-def get_points(r) -> list[str]:
+def get_points(html_text: str) -> list[str]:
     """
     Функция для парсинга html страницы и формирования массива точек
-    :param response: полученный отклик
+    :param html_text: полученный код страницы
     :return: массив точек (fix)
-
     """
-    arr0 = []
-    soup = Bs(r.text, 'html.parser')
-    table = soup.findAll('pre')
-    for i in range(len(table)):
-        arr0.append(table[i].text)
-    arr = []
-    result = re.finditer(r'[A-Z]+(\s{2,})\d', r.text)
-    for i in result:
-        arr.append(i.group())
-    arr2 = []
-    for i in arr:
-        arr2.append(re.findall('[A-Z]{1,}', i))
-    arr3 = []
-    for i in arr2:
-        arr3.append(''.join(i))
-    print(arr3)
+    soup = Bs(html_text, 'html.parser')
+    table = soup.find('pre').text
+    headers_split = table.split('\n')[1:-1]
+    arr = [s.split()[0] for s in headers_split]
+    return arr
 
 
-r = get_response('uuee', 'urml')
-arr = get_points(r)
+# text = get_response('uuee', 'urml')
+text = get_text_from_file()
+arr = get_points(text)
 print(arr)
-
-# def main():
-#     departure = input()
-#     arrival = input()
-#     print(get_points(get_response(departure, arrival)))
