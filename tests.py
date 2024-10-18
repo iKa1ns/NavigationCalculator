@@ -2,10 +2,11 @@ import unittest
 
 import requests
 
-from main import get_response, get_points
+from models.models import Fix
+from main import get_response, get_points, get_text_from_file
 
 
-class Test(unittest.TestCase):
+class TestResponce(unittest.TestCase):
     def test_get_response_instance(self):
         r = get_response('uuee', 'urml')
         self.assertIsInstance(r, requests.models.Response, 'get_responce: Неверный тип выходных данных')
@@ -28,3 +29,18 @@ class Test(unittest.TestCase):
                              'get_points: Неправильный набор точек')
         self.assertListEqual(get_points(get_response('UUWW', 'UUBW')), ['UUWW', 'UUBW'],
                              'get_points: Неправильный набор точек')
+
+class TestPoints(unittest.TestCase):
+    text = get_text_from_file()
+    points = get_points(text)
+    def test_get_points_list_instance(self):
+        self.assertIsInstance(self.points, list, 'get_points: Неверный тип выходных данных')
+
+    def test_get_points_objs_instance(self):
+        arr = [isinstance(i, Fix) for i in self.points]
+        self.assertTrue(all(arr), 'get_points: Обьекты выходного массива неверного типа данных')
+
+    def test_fix_dict(self):
+        a = Fix(1, 1, 1, 1, 1, 1)
+        self.assertDictEqual(a, {'id': 1, 'freq': 1, 'trk': 1, 'dist': 1, 'coords': 1, 'remarks': 1},
+                             'models: Класс Fix описан неверно')
