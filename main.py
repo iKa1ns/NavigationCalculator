@@ -57,4 +57,28 @@ def get_points(html_text: str) -> list[str]:
 # text = get_response('uuee', 'urml')
 text = get_text_from_file()
 arr = get_points(text)
-print(arr)
+
+
+def get_description(html_text: str):
+    soup = Bs(html_text, 'html.parser')
+    table = soup.find('pre').text
+    headers_split = table.split('\n')[1:-1]
+    arr1 = [s.split()[1:6] for s in headers_split]
+    return arr1
+
+
+text = get_text_from_file()
+arr1 = get_description(text)
+
+
+def fix(arr, arr1):
+    while True:
+        req = input('input point address => ')
+        for i in range(len(arr)):
+            if arr[i] == req:
+                return arr1[i]
+        else:
+            print('wrong point address')
+
+
+print(fix(arr, arr1))
