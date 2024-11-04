@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup as Bs
-
+from models.models import Fix
 
 def get_text_from_file():
     return open('test.html', 'r').read()
@@ -40,7 +40,7 @@ def get_response(departure: str, arrival: str) -> str:
         print(e)
 
 
-def get_points(html_text: str) -> list[str]:
+def get_points(html_text: str) -> list:
     """
     Функция для парсинга html страницы и формирования массива точек
     :param html_text: полученный код страницы
@@ -50,35 +50,18 @@ def get_points(html_text: str) -> list[str]:
     table = soup.find('pre').text
     headers_split = table.split('\n')[1:-1]
     # TODO Вместо добавления в массив названий точек, создавать объекты класса Fix и добавлять эти объекты в массив
-    arr = [s.split()[0] for s in headers_split]
-    return arr
-
-
-# text = get_response('uuee', 'urml')
-text = get_text_from_file()
-arr = get_points(text)
-
-
-def get_description(html_text: str):
-    soup = Bs(html_text, 'html.parser')
-    table = soup.find('pre').text
-    headers_split = table.split('\n')[1:-1]
-    arr1 = [s.split()[1:6] for s in headers_split]
-    return arr1
-
-
-text = get_text_from_file()
-arr1 = get_description(text)
-
-
-def fix(arr, arr1):
-    while True:
-        req = input('input point address => ')
-        for i in range(len(arr)):
-            if arr[i] == req:
-                return arr1[i]
+    fix_arr = []
+    for i in headers_split:
+        i = i.split()
+        if len(i) == 7:
+            fix = Fix(i[0], i[1], i[2], i[3], i[4], i[5], i[6])
         else:
-            print('wrong point address')
+            fix = Fix(i[0], None, i[1], i[2], i[3], i[4], i[5])
+        fix_arr.append(fix)
+    return fix_arr
 
-
-print(fix(arr, arr1))
+# arr1 = get_response('departure', 'arrival')
+arr1 = get_text_from_file()
+print(get_points(arr1))
+f = get_points(arr1)
+print(f[4].xCoord)
