@@ -1,6 +1,9 @@
 import requests
 from bs4 import BeautifulSoup as Bs
+
 from models.models import Fix
+from tools import icao_is_avaiable, save_to_file
+
 
 def get_text_from_file():
     return open('test.html', 'r').read()
@@ -49,7 +52,6 @@ def get_points(html_text: str) -> list:
     soup = Bs(html_text, 'html.parser')
     table = soup.find('pre').text
     headers_split = table.split('\n')[1:-1]
-    # TODO Вместо добавления в массив названий точек, создавать объекты класса Fix и добавлять эти объекты в массив
     fix_arr = []
     for i in headers_split:
         i = i.split()
@@ -60,8 +62,19 @@ def get_points(html_text: str) -> list:
         fix_arr.append(fix)
     return fix_arr
 
-# arr1 = get_response('departure', 'arrival')
-arr1 = get_text_from_file()
-print(get_points(arr1))
-f = get_points(arr1)
-print(f[4].xCoord)
+
+# TODO Сделать проверку на существование ICAO кода
+def main():
+    departure = input()
+    if icao_is_avaiable(departure):
+        arrival = input()
+        if icao_is_avaiable(arrival):
+            # html = get_text_from_file()
+            html = get_response(departure, arrival)
+            points = get_points(html)
+            save_to_file('test.csv', points)
+            print(points)
+
+
+if __name__ == "__main__":
+    main()
