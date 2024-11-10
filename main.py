@@ -2,11 +2,11 @@ import requests
 from bs4 import BeautifulSoup as Bs
 
 from models.models import Fix
-from tools import icao_is_avaiable, save_to_file
+from tools import icao_is_available, save_to_file, import_from_file, path_is_available
 
 
 def get_text_from_file():
-    return open('test.html', 'r').read()
+    return open('data/test.html', 'r').read()
 
 
 def get_response(departure: str, arrival: str) -> str:
@@ -43,7 +43,7 @@ def get_response(departure: str, arrival: str) -> str:
         print(e)
 
 
-def get_points(html_text: str) -> list:
+def get_points(html_text: str) -> list[Fix]:
     """
     Функция для парсинга html страницы и формирования массива точек
     :param html_text: полученный код страницы
@@ -63,17 +63,32 @@ def get_points(html_text: str) -> list:
     return fix_arr
 
 
-# TODO Сделать проверку на существование ICAO кода
+def get_icao() -> [str, str]:
+    departure = 'UUEE'  # input("Введите ICAO-код отправления: ")
+    if icao_is_available(departure):
+        arrival = 'URML'  # input("Введите ICAO-код прибытия: ")
+        if icao_is_available(arrival):
+            return departure, arrival
+        else:
+            print(f"Ошибка: ICAO-код прибытия '{arrival}' недействителен.")
+            exit()
+    else:
+        print(f"Ошибка: ICAO-код отправления '{departure}' недействителен.")
+        exit()
+
+
 def main():
-    departure = input()
-    if icao_is_avaiable(departure):
-        arrival = input()
-        if icao_is_avaiable(arrival):
-            # html = get_text_from_file()
-            html = get_response(departure, arrival)
-            points = get_points(html)
-            save_to_file('test.csv', points)
-            print(points)
+    departure, arrival = get_icao()
+    # проверка на наличие пути в базе данных
+    if path_is_available(departure, arrival):
+        file_name = f"data/paths/{departure}-{arrival}.csv"
+        points = import_from_file(file_name)
+    else:
+        html = get_text_from_file()
+        # html = get_response(departure, arrival)
+        points = get_points(html)
+        # ICAO-ICAO.csv
+        save_to_file(f'data/paths/{departure}-{arrival}.csv', points)
 
 
 if __name__ == "__main__":
