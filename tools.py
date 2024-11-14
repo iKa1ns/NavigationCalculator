@@ -1,4 +1,5 @@
 from models.models import Fix
+import csv
 
 
 def icao_is_available(icao) -> bool:
@@ -26,11 +27,14 @@ def path_is_available(departure, arrival) -> bool:
     :param arrival: icao - код
     :return:
     """
-    # TODO проверка в data/paths/paths.txt
-    ...
+    with open('data/paths/paths.txt', 'r') as file:
+        if departure in file.read() and arrival in file.read():
+            return True
+        else:
+            return False
 
 
-def save_to_file(file_name, data):
+def save_to_file(file_name, data, departure, arrival):
     """
     Функция сохранения массива в файл .csv
     :param file_name:
@@ -41,7 +45,8 @@ def save_to_file(file_name, data):
         file.write('ID,FREQ,TRK,DIST,CoordsX,CoordsY,Name/Remarks\n')
         for i in data:
             file.write(f'{i.id},{i.freq},{i.trk},{i.dist},{i.xCoord},{i.yCoord},{i.name}\n')
-    # TODO добавить добавление в файл paths.txt
+        with open('data/paths/paths.txt', mode='w') as f:
+            f.write(f'Departure: {departure}, Arrival: {arrival}\n')
 
 
 def import_from_file(file_name) -> list[Fix]:
@@ -50,5 +55,22 @@ def import_from_file(file_name) -> list[Fix]:
     :param file_name: имя файла из которого вычленяется информация вида 'UUEE-URML.csv'
     :return: Массив из точек Fix # как в функции get_points
     """
-    # TODO Добавить импортирование
-    ...
+
+
+    fixes = []
+
+    with open(file_name, mode='r', newline='', encoding='utf-8') as file:
+        csv_reader = csv.reader(file)
+        for i in csv_reader:
+            if len(i) == 7:
+                id_ = i[0]
+                freq = i[1]
+                trk = i[2]
+                dist = i[3]
+                xCoord = i[4]
+                yCoord = i[5]
+                name = i[6]
+                fix = Fix(id_, freq, trk, dist, xCoord, yCoord, name)
+                fixes.append(fix)
+
+    return fixes

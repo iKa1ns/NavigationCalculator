@@ -88,7 +88,7 @@ def main():
         # html = get_response(departure, arrival)
         points = get_points(html)
         # ICAO-ICAO.csv
-        save_to_file(f'data/paths/{departure}-{arrival}.csv', points)
+        save_to_file(f'data/paths/{departure}-{arrival}.csv', points, departure, arrival)
 
 
 if __name__ == "__main__":
